@@ -39,21 +39,23 @@ class LeaderboardController extends Controller
     {
         $today = Carbon::today();
         
-        $leaderboard = GameScore::with('user:id,username')
-            ->whereDate('created_at', $today)
-            ->selectRaw('user_id, username, MAX(score) as score')
-            ->join('users', 'scores.user_id', '=', 'users.id')
-            ->groupBy('user_id', 'username')
-            ->orderBy('score', 'desc')
+        // Get user IDs with their max scores for today
+        $topScores = GameScore::whereDate('created_at', $today)
+            ->selectRaw('user_id, MAX(score) as max_score')
+            ->groupBy('user_id')
+            ->orderBy('max_score', 'desc')
             ->limit(100)
-            ->get()
-            ->map(function ($score, $index) {
-                return [
-                    'rank' => $index + 1,
-                    'username' => $score->username,
-                    'score' => $score->score,
-                ];
-            });
+            ->get();
+
+        // Build leaderboard with user details
+        $leaderboard = $topScores->map(function ($scoreRecord, $index) {
+            $user = \App\Models\User::select('id', 'username')->find($scoreRecord->user_id);
+            return [
+                'rank' => $index + 1,
+                'username' => $user ? $user->username : 'Unknown',
+                'score' => $scoreRecord->max_score,
+            ];
+        });
 
         return response()->json($leaderboard);
     }
@@ -65,21 +67,23 @@ class LeaderboardController extends Controller
     {
         $weekStart = Carbon::now()->startOfWeek();
         
-        $leaderboard = GameScore::with('user:id,username')
-            ->where('created_at', '>=', $weekStart)
-            ->selectRaw('user_id, username, MAX(score) as score')
-            ->join('users', 'scores.user_id', '=', 'users.id')
-            ->groupBy('user_id', 'username')
-            ->orderBy('score', 'desc')
+        // Get user IDs with their max scores for this week
+        $topScores = GameScore::where('created_at', '>=', $weekStart)
+            ->selectRaw('user_id, MAX(score) as max_score')
+            ->groupBy('user_id')
+            ->orderBy('max_score', 'desc')
             ->limit(100)
-            ->get()
-            ->map(function ($score, $index) {
-                return [
-                    'rank' => $index + 1,
-                    'username' => $score->username,
-                    'score' => $score->score,
-                ];
-            });
+            ->get();
+
+        // Build leaderboard with user details
+        $leaderboard = $topScores->map(function ($scoreRecord, $index) {
+            $user = \App\Models\User::select('id', 'username')->find($scoreRecord->user_id);
+            return [
+                'rank' => $index + 1,
+                'username' => $user ? $user->username : 'Unknown',
+                'score' => $scoreRecord->max_score,
+            ];
+        });
 
         return response()->json($leaderboard);
     }
@@ -91,21 +95,23 @@ class LeaderboardController extends Controller
     {
         $monthStart = Carbon::now()->startOfMonth();
         
-        $leaderboard = GameScore::with('user:id,username')
-            ->where('created_at', '>=', $monthStart)
-            ->selectRaw('user_id, username, MAX(score) as score')
-            ->join('users', 'scores.user_id', '=', 'users.id')
-            ->groupBy('user_id', 'username')
-            ->orderBy('score', 'desc')
+        // Get user IDs with their max scores for this month
+        $topScores = GameScore::where('created_at', '>=', $monthStart)
+            ->selectRaw('user_id, MAX(score) as max_score')
+            ->groupBy('user_id')
+            ->orderBy('max_score', 'desc')
             ->limit(100)
-            ->get()
-            ->map(function ($score, $index) {
-                return [
-                    'rank' => $index + 1,
-                    'username' => $score->username,
-                    'score' => $score->score,
-                ];
-            });
+            ->get();
+
+        // Build leaderboard with user details
+        $leaderboard = $topScores->map(function ($scoreRecord, $index) {
+            $user = \App\Models\User::select('id', 'username')->find($scoreRecord->user_id);
+            return [
+                'rank' => $index + 1,
+                'username' => $user ? $user->username : 'Unknown',
+                'score' => $scoreRecord->max_score,
+            ];
+        });
 
         return response()->json($leaderboard);
     }
@@ -123,21 +129,23 @@ class LeaderboardController extends Controller
             ], 400);
         }
 
-        $leaderboard = GameScore::with('user:id,username')
-            ->where('difficulty', strtolower($difficulty))
-            ->selectRaw('user_id, username, MAX(score) as score')
-            ->join('users', 'scores.user_id', '=', 'users.id')
-            ->groupBy('user_id', 'username')
-            ->orderBy('score', 'desc')
+        // Get user IDs with their max scores for this difficulty
+        $topScores = GameScore::where('difficulty', strtolower($difficulty))
+            ->selectRaw('user_id, MAX(score) as max_score')
+            ->groupBy('user_id')
+            ->orderBy('max_score', 'desc')
             ->limit(100)
-            ->get()
-            ->map(function ($score, $index) {
-                return [
-                    'rank' => $index + 1,
-                    'username' => $score->username,
-                    'score' => $score->score,
-                ];
-            });
+            ->get();
+
+        // Build leaderboard with user details
+        $leaderboard = $topScores->map(function ($scoreRecord, $index) {
+            $user = \App\Models\User::select('id', 'username')->find($scoreRecord->user_id);
+            return [
+                'rank' => $index + 1,
+                'username' => $user ? $user->username : 'Unknown',
+                'score' => $scoreRecord->max_score,
+            ];
+        });
 
         return response()->json($leaderboard);
     }
