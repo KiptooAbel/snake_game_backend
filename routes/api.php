@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GameScoreController;
+use App\Http\Controllers\Api\GameDataController;
 use App\Http\Controllers\Api\LeaderboardController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -42,6 +43,13 @@ Route::middleware('auth:api')->group(function () {
         Route::get('best', [GameScoreController::class, 'best']);
         Route::get('{gameScore}', [GameScoreController::class, 'show']);
         Route::delete('{gameScore}', [GameScoreController::class, 'destroy']);
+    });
+    
+    // Game data routes (gems, hearts, unlocked levels)
+    Route::prefix('game')->group(function () {
+        Route::get('data', [GameDataController::class, 'getData']);
+        Route::post('sync', [GameDataController::class, 'sync']);
+        Route::put('update-field', [GameDataController::class, 'updateField']);
     });
 });
 

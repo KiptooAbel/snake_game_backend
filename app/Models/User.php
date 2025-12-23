@@ -28,6 +28,9 @@ class User extends Authenticatable implements JWTSubject
         'total_games',
         'best_score',
         'total_score',
+        'gems',
+        'hearts',
+        'unlocked_levels',
     ];
 
     /**
@@ -53,6 +56,9 @@ class User extends Authenticatable implements JWTSubject
             'total_games' => 'integer',
             'best_score' => 'integer',
             'total_score' => 'integer',
+            'gems' => 'integer',
+            'hearts' => 'integer',
+            'unlocked_levels' => 'array',
         ];
     }
 
