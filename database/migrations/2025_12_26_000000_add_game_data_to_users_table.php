@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->integer('gems')->default(0)->after('total_score');
-            $table->integer('hearts')->default(0)->after('gems');
+            $table->integer('hearts')->default(5)->after('gems');
             $table->json('unlocked_levels')->nullable()->after('hearts');
         });
     }

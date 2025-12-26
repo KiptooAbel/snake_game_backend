@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GameScoreController;
-use App\Http\Controllers\Api\GameDataController;
 use App\Http\Controllers\Api\LeaderboardController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\UserGameDataController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,10 +46,13 @@ Route::middleware('auth:api')->group(function () {
     });
     
     // Game data routes (gems, hearts, unlocked levels)
-    Route::prefix('game')->group(function () {
-        Route::get('data', [GameDataController::class, 'getData']);
-        Route::post('sync', [GameDataController::class, 'sync']);
-        Route::put('update-field', [GameDataController::class, 'updateField']);
+    Route::prefix('game-data')->group(function () {
+        Route::get('/', [UserGameDataController::class, 'getGameData']);
+        Route::put('/', [UserGameDataController::class, 'updateGameData']);
+        Route::put('field', [UserGameDataController::class, 'updateField']);
+        Route::post('gems', [UserGameDataController::class, 'modifyGems']);
+        Route::post('hearts', [UserGameDataController::class, 'modifyHearts']);
+        Route::post('unlock-level', [UserGameDataController::class, 'unlockLevel']);
     });
 });
 

@@ -42,6 +42,9 @@ class AuthController extends Controller
             'total_games' => 0,
             'best_score' => 0,
             'total_score' => 0,
+            'gems' => 0,
+            'hearts' => 5,
+            'unlocked_levels' => [1], // Start with level 1 unlocked
         ]);
 
         try {
