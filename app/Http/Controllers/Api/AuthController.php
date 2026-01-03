@@ -60,7 +60,9 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'User successfully registered',
             'user' => $user,
-            'token' => $token,
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => JWTAuth::factory()->getTTL() * 60
         ], 201);
     }
 
