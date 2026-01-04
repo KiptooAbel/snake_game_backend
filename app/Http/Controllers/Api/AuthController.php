@@ -67,12 +67,12 @@ class AuthController extends Controller
     }
 
     /**
-     * Login user
+     * Login user with email or username
      */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
+            'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -84,23 +84,30 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $credentials = $request->only('email', 'password');
+        $loginField = $request->input('login');
+        $password = $request->input('password');
+        
+        // Determine if login field is email or username
+        $fieldType = filter_var($loginField, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        
+        // Find user by email or username
+        $user = User::where($fieldType, $loginField)->first();
+        
+        if (!$user || !Hash::check($password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
 
         try {
-            if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid credentials'
-                ], 401);
-            }
+            $token = JWTAuth::fromUser($user);
         } catch (JWTException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Could not create token'
             ], 500);
         }
-
-        $user = auth('api')->user();
 
         return response()->json([
             'success' => true,
